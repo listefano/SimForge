@@ -4,11 +4,23 @@ namespace App\Domain\Simulation\Models;
 
 use App\Domain\Character\Models\Character;
 use App\Domain\ItemDatabase\Models\Item;
+use App\Domain\Simulation\Enums\SimulationStatus;
+use App\Domain\Simulation\Enums\SimulationType;
+use Database\Factories\SimulationFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Simulation extends Model
 {
+    /** @use HasFactory<SimulationFactory> */
+    use HasFactory;
+
+    protected static function newFactory(): SimulationFactory
+    {
+        return SimulationFactory::new();
+    }
+
     protected $fillable = [
         'simulation_batch_id',
         'character_id',
@@ -23,13 +35,18 @@ class Simulation extends Model
         'finished_at',
     ];
 
-    protected $casts = [
-        'config' => 'array',
-        'results' => 'array',
-        'dps_gain' => 'float',
-        'started_at' => 'datetime',
-        'finished_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'type' => SimulationType::class,
+            'status' => SimulationStatus::class,
+            'config' => 'array',
+            'results' => 'array',
+            'dps_gain' => 'float',
+            'started_at' => 'datetime',
+            'finished_at' => 'datetime',
+        ];
+    }
 
     public function batch(): BelongsTo
     {
