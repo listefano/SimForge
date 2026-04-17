@@ -86,3 +86,30 @@ API routes live at `/api/*` (prefix configured in `bootstrap/app.php`). Domain-s
 ### Testing
 
 Tests use SQLite in-memory, synchronous queues, and array cache/session/broadcast — no external services needed. Add Feature tests under `tests/Feature/` and Unit tests under `tests/Unit/`.
+
+## SimulationCraft Integration
+
+SimForge wraps the SimulationCraft CLI (`simc`) to run DPS simulations.
+
+### How SimC is invoked
+- Input: `.simc` profile files (generated from character data)
+- Execution: `simc input=profile.simc json2=result.json threads=8 iterations=10000`
+- Output: JSON result with DPS metrics
+
+### Droptimizer flow
+1. User submits character profile (SimC addon export string)
+2. Backend parses profile, creates base simulation
+3. Item Service looks up loot table for selected content (dungeon/raid/crafting)
+4. For each potential upgrade item: clone base profile, equip item, create Simulation record
+5. All sims are dispatched as a SimulationBatch via Horizon
+6. Worker runs simc CLI per simulation, parses JSON result
+7. Results are compared against base DPS → ranked by DPS gain
+8. Progress + results broadcast via Reverb WebSocket
+
+### Profile format
+SimC addon exports look like:
+warrior="Listefano"
+level=80
+race=dwarf
+spec=protection
+# gear follows as item lines
