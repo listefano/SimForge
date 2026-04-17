@@ -3,6 +3,7 @@
 namespace App\Domain\ItemDatabase\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Item extends Model
 {
@@ -20,4 +21,9 @@ class Item extends Model
         'stats' => 'array',
         'effects' => 'array',
     ];
+
+    public function lootSources(): BelongsToMany
+    {
+        return $this->belongsToMany(LootSource::class);
+    }
 }
