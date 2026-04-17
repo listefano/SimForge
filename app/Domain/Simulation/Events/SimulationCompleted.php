@@ -6,11 +6,11 @@ use App\Domain\Simulation\Models\Simulation;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SimulationCompleted implements ShouldBroadcast
+class SimulationCompleted implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -33,6 +33,11 @@ class SimulationCompleted implements ShouldBroadcast
         }
 
         return $channels;
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'simulation.completed';
     }
 
     /** @return array<string, mixed> */
